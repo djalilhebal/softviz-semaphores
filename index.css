@@ -1,0 +1,206 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: snow;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: seagreen;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  background: gray;
+  color: white;
+  padding: 1px 2px;
+}
+
+/********************************/
+
+form {
+  background: lightgray;
+}
+
+fieldset {
+  border: 0px;
+}
+
+table {
+  background: white;
+  margin: auto;
+}
+
+#user-vars {
+  background: white;
+  text-align: left;
+  padding: 5px;
+  margin: 5px;
+  line-height: 2;
+  font-size: 17px;
+}
+
+#user-vars input {
+  color: darkblue;
+  font-size: 17px;
+  border: 0;
+  border-bottom: 2px dashed black;
+  outline: none;
+  min-width: 250px;
+}
+#user-vars input:focus {
+  border-color: darkblue;
+}
+
+textarea {
+  color: darkblue;
+  height: 150px;
+  width: 200px;
+  outline: none;
+  padding: 3px;
+}
+textarea[title] {
+  background-color: red;
+  color: black;
+}
+
+#buttons {
+  margin: 3px 0;
+}
+
+/********************************/
+
+/* itch.io uses 640x360 by default */
+#sim {
+  width: 640px;
+  height: 360px;
+  background: black;
+  border: 2px dashed white;
+  margin: 5px auto;
+}
+
+#sim > * {
+  position: relative;
+}
+
+#feu1, #feu2 {
+  background-color: red;
+  background-image: url(images/traffic-lights-red.svg);
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  position: absolute !important;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+#sim[data-chan-queued="true"] #feu1, #sim[data-chan-queued="true"] #feu2 {
+  border-color: yellow;
+}
+
+#sim[data-feu="0"] #feu1, #sim[data-feu="0"] #feu2 {
+  background-color: gray !important;
+}
+#sim[data-feu="1"] #feu1 {
+  background-image: url(images/traffic-lights-green.svg);
+  background-color: green;
+}
+#sim[data-feu="2"] #feu2 {
+  background-image: url(images/traffic-lights-green.svg);
+  background-color: green;
+}
+
+#feu1 {
+  margin-top: 75px;
+  margin-left: -200px;
+}
+#feu2 {
+  margin-top: 70px;
+}
+
+#voie1, #voie2 {
+  background: white;
+  display: flex;
+  padding: 5px;
+  z-index: 1;
+}
+
+#voie1 {
+  flex-direction: column-reverse;
+  width: 48px;
+  height: 205px;
+  position: absolute;
+  margin-left: 180px;
+  padding-bottom: 150px;
+}
+#voie2 {
+  height: 48px;
+  top: 130px;
+  width: 380px;
+  padding-left: 255px;
+}
+
+#carrefour {
+  background: white;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center center;
+  top: 210px;
+  left: 158px;
+  z-index: 2;
+}
+#carrefour[data-state="collision"] {
+  background: radial-gradient(red, transparent);
+}
+
+.vehicle {
+  width: 45px;
+  height: 45px;
+  display: inline-block;
+  background-color: black;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 2px;
+  opacity: 1;
+  transition: opacity 2s, margin 1s;
+}
+.car { background-image: url(images/city-car.svg); }
+.truck { background-image: url(images/truck.svg); }
+
+.vehicle[data-direction="down"] { transform: rotateZ(90deg); }
+.vehicle[data-direction="left"] { transform: rotateY(180deg); }
+
+#carrefour[data-state="normal"] .vehicle[data-state="leaving"] {
+  opacity: 0;
+}
+#carrefour[data-state="normal"] .vehicle[data-state="leaving"][data-direction="down"] {
+  margin-bottom: -150px;
+}
+#carrefour[data-state="normal"] .vehicle[data-state="leaving"][data-direction="left"] {
+  margin-left: -150px;
+}
+
+/********************************/
+
+section, footer {
+  background: gainsboro;
+  text-align: left;
+  margin: 10px;
+  padding: 10px;
+}
+
+section pre {
+  white-space: pre-line;
+}
+
+footer {
+  text-align: center;
+}
