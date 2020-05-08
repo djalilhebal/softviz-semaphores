@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link href="index.css" rel="stylesheet" />
-  <title>DAC Exo6: La Circulation</title>
+  <title>Semaphores: Traffic Sim</title>
 </head>
 <body>
   <header>
-    <h1>DAC Exo6: La Circulation</h1>
-    <p class="subtitle">#ConcurrentProgramming #Simulation #WIP</p>
+    <h1>Semaphores: Traffic Sim</h1>
+    <p class="subtitle">Nerdyfying a college course exercise #ConcurrentProgramming #Visualization</p>
   </header>
   <main>
     <form autocomplete="off" spellcheck="false">
@@ -20,14 +20,34 @@
           <b>Globally defined variables</b><br />
 
           <b>Semaphores</b>
-            {<input id="sema-names" type="text" value="sFeu1, sFeu2, sVide1, sVide2" />}
+            {<input id="sema-names" type="text"
+              placeholder="comma-separated identifiers"
+              pattern="([A-Za-z$_][A-Za-z0-9$_]*)?(\s*,\s*([A-Za-z$_][A-Za-z0-9$_]*))*"
+              value="sFeu1, sFeu2, sVide1, sVide2"
+            />}
             =
-            {<input id="sema-vals" type="text" value="1, 0, 1, 1" />}
+            {<input id="sema-vals" type="text"
+              placeholder="comma-separated integers"
+              pattern="\d?(\s*,\s*\d)*"
+              value="1, 0, 1, 1"
+            />}
+
           <br />
+
           <b>Integers</b>
-            {<input id=int-names type="text" value="feu" />}
+            {<input id=int-names type="text"
+              placeholder="comma-separated identifiers"
+              pattern="feu(\s*,\s*([A-Za-z$_][A-Za-z0-9$_]*))*"
+              value="feu"
+            />}
             =
-            {<input id="int-vals" type="text" value="1" />}
+            {<input id="int-vals" type="text"
+              placeholder="comma-separated integers"
+              pattern="[12](\s*,\s*\d)*"
+              value="1"
+            />}
+            <br>
+            <strong>* <code>feu</code> must be in <code>{1, 2}</code></strong>
         </div>
 
         <table>
@@ -186,12 +206,12 @@ v(sVide2)</textarea>
     <h2>Credits</h2>
     <pre>
     - 'City car', 'Truck', 'Traffic lights green', and 'Traffic lights red' icons by <a href="http://delapouite.com">Delapouite</a> under CC BY 3.0
-    </pre>
     - <a href="https://github.com/zeit">@ZEIT</a>'s <code>async-sema</code> package (under the MIT license) heavily inspired my SillySemaphore
+    </pre>
   </section>
   
   <footer>
-    By <a href="https://twitter.com/djalilhebal">@djalilhebal</a>, under CC BY 3.0, <a href="https://github.com/djalilhebal/softviz-semaphores">source code available on GitHub</a>
+    Made by <a href="https://twitter.com/djalilhebal">@djalilhebal</a>, under CC BY 3.0, <a href="https://github.com/djalilhebal/softviz-semaphores">source code available on GitHub</a>
   </footer>
 
   <script src="presets.js"></script>
