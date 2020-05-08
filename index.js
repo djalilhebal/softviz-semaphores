@@ -292,15 +292,27 @@ class Algorithme {
   async run() {
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     try {
-      await new AsyncFunction('that', `
+      const asyncFunc = new AsyncFunction(`
         with (Sim.userVars) {
-          ${ Algorithme.awaitifyThat(this.userAlgo) }
+          ${ Algorithme.awaitifyThis(this.userAlgo) }
         }
-      `)(this);
+      `);
+      await asyncFunc.call(this);
     } catch (userError) {
       console.error('userError', userError); // for actual debugging
       Sim.showError(this.algoSource, userError.message);
     }
+  }
+
+  /**
+   * Replace function calls with `await`ed method invocations associated with `this` object.
+   * 
+   * @param {string} code
+   * @returns {string} Updated code
+   */
+  static awaitifyThis(code) {
+    // Prefix "p", "v", "sleep", and "circuler" calls with `await` and attach them to `this`
+    return code.replace(/\b(p|v|sleep|circuler)\(/g, 'await this.$1(');
   }
 
   async p(x) {
@@ -317,17 +329,6 @@ class Algorithme {
     return new Promise((resolve, _reject) => {
       setTimeout(resolve, secs * 1000);
     });
-  }
-
-  /**
-   * Prefix "p", "v", "sleep", and "circuler" with the `await` keyword
-   *   and attach them to the `that` object
-   * 
-   * @param {string} code
-   * @returns {string}
-   */
-  static awaitifyThat(code) {
-    return code.replace(/\b(p|v|sleep|circuler)\(/g, 'await that.$1(');
   }
 
   /**
