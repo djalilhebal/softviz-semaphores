@@ -1,8 +1,4 @@
 /**
- * @file DAC Exo6: La Circulation
- */
-
-/**
  * @param {Array} arrA
  * @param {Array} arrB
  * @returns {Object}
@@ -73,9 +69,9 @@ class Sim {
   static userVars = {};
   static userAlgos = {};
 
-  static chan  = null;
-  static voie1 = [];
-  static voie2 = [];
+  static ctrl  = null;
+  static lane1 = [];
+  static lane2 = [];
 
   static ui = {};
   static creatorInterval = null;
@@ -109,10 +105,10 @@ class Sim {
     }
 
     function freeThreads() {
-      // - kill "threads" (maybe simply call .destory() of each existing Traversee)
+      // - kill "threads" (maybe simply call .destory() of each existing Traverser)
       // ...
 
-      // - cancel Changement 'chan' (AFAIK you can not cancel Promises...)
+      // - cancel Controller 'ctrl' (AFAIK you can not cancel Promises...)
       // ...
     }
 
@@ -133,16 +129,16 @@ class Sim {
       $semaVals: $('#sema-vals'),
       $intNames: $('#int-names'),
       $intVals: $('#int-vals'),
-      $changement: $('#changement'),
-      $traversee1: $('#traversee1'),
-      $traversee2: $('#traversee2'),
+      $controller: $('#controller'),
+      $traverser1: $('#traverser1'),
+      $traverser2: $('#traverser2'),
 
       $sim: $('#sim'),
-      $feu1: $('#feu1'),
-      $feu2: $('#feu2'),
-      $voie1: $('#voie1'),
-      $voie2: $('#voie2'),
-      $carrefour: $('#carrefour'),
+      $light1: $('#light-1'),
+      $light2: $('#light-2'),
+      $lane1: $('#lane-1'),
+      $lane2: $('#lane-2'),
+      $intersection: $('#intersection'),
     })
 
     Sim.ui.$form.onsubmit = (ev) => {
@@ -152,12 +148,12 @@ class Sim {
 
     $('#btn-load-attempt').onclick = (ev) => {
       ev.preventDefault();
-      Sim.loadPreset(presets.myAttempt);
+      Sim.loadPreset(Sim.presets.myAttempt);
     }
 
     $('#btn-load-correct').onclick = (ev) => {
       ev.preventDefault();
-      Sim.loadPreset(presets.correctAnswer);
+      Sim.loadPreset(Sim.presets.correctAnswer);
     }
 
   }
@@ -168,9 +164,9 @@ class Sim {
     // userAlgos...
     Object.assign(Sim.userAlgos,
       {
-        changement: ui.$changement.value,
-        traversee1: ui.$traversee1.value,
-        traversee2: ui.$traversee2.value,
+        controller: ui.$controller.value,
+        traverser1: ui.$traverser1.value,
+        traverser2: ui.$traverser2.value,
       }
     )
 
@@ -191,51 +187,51 @@ class Sim {
   }
 
   static initCreator() {
-    Sim.chan = new Changement();
-    // maybe create a new instance of Traversee every 2 secs
-    Sim.creatorInterval = setInterval(Sim.maybeCreateTraversee, 2 * 1000);
+    Sim.ctrl = new Controller();
+    // maybe create a new instance of Traverser every 2 secs
+    Sim.creatorInterval = setInterval(Sim.maybeCreateTraverser, 2 * 1000);
   }
 
   /**
-   * Maybe create a new instance of Traversee
+   * Maybe create a new instance of Traverser
    * @returns {boolean} True if a new instance was created; false otherwise.
    */
-  static maybeCreateTraversee() {
+  static maybeCreateTraverser() {
     // maybe not
     if (Math.random() < 0.5) {
       return false;
     }
 
     if (Math.random() < 0.5) {
-      if (Sim.voie1.length < Traversee1.MAX) {
-        const t1 = new Traversee1();
+      if (Sim.lane1.length < Traverser1.MAX) {
+        const t1 = new Traverser1();
         return true;
       }
     } else {
-      if (Sim.voie2.length < Traversee2.MAX) {
-        const t2 = new Traversee2();
+      if (Sim.lane2.length < Traverser2.MAX) {
+        const t2 = new Traverser2();
         return true;
       }
     }
 
-    // no room for a new 'traversee' in the randomly chosen 'voie'
+    // no room for a new 'Traverser' in the randomly chosen 'lane'
     return false;
   }
 
   static redraw() {
     // Just update 'data-*' and 'order' values, and let CSS take care of the rest.
 
-    // Feu
-    const {ui, chan, userVars} = Sim;
-    ui.$sim.dataset.feu = userVars.feu;
-    ui.$sim.dataset.chanQueued = chan.orderVec.some(sema => userVars[sema].getPosition(chan) > 0);
+    // Traffic light
+    const {ui, ctrl, userVars} = Sim;
+    ui.$sim.dataset.light = userVars.light;
+    ui.$sim.dataset.ctrlQueued = ctrl.orderVec.some(sema => userVars[sema].getPosition(ctrl) > 0);
 
-    // Voies
-    const {voie1, voie2, redrawTraversee} = Sim;
-    voie1.sort(Traversee.compareTraversees);
-    voie2.sort(Traversee.compareTraversees);
-    voie1.forEach(redrawTraversee);
-    voie2.forEach(redrawTraversee);
+    // Lanes
+    const {lane1, lane2, redrawTraverser} = Sim;
+    lane1.sort(Traverser.compareTraversers);
+    lane2.sort(Traverser.compareTraversers);
+    lane1.forEach(redrawTraverser);
+    lane2.forEach(redrawTraverser);
 
     // XXX: Maybe it's better to use Proxy(userVars) and redraw after its attributes are accessed..
     // Redraw before each repaint
@@ -243,12 +239,12 @@ class Sim {
   }
 
   /**
-   * Update Traversee
+   * Update Traverser
    * 
-   * @param {Traversee} t 
+   * @param {Traverser} t 
    * @param {number} i - index 
    */
-  static redrawTraversee(t, i) {
+  static redrawTraverser(t, i) {
     t.$elem.style.order = String(i);
     t.$elem.title =
       `${t.name}\n\n` +
@@ -271,36 +267,48 @@ class Sim {
    * @param {object} preset
    */
   static loadPreset(preset) {
-    const keys = 'semaNames semaVals intNames intVals changement traversee1 traversee2'.split(' ');
+    const keys = 'semaNames semaVals intNames intVals controller traverser1 traverser2'.split(' ');
     for (const key of keys) {
       Sim.ui['$' + key].value = preset[key];
     }
   }
 }
 
-class Algorithme {
+class Algorithm {
 
   /**
-   * @param {String} algoSource - "changement", "traversee1", or "traversee2"
+   * @param {String} algoSource - "controller", "traverser1", or "traverser2"
    */
   constructor(algoSource) {
     this.algoSource = algoSource;
     this.userAlgo   = Sim.userAlgos[algoSource];
-    this.orderVec   = Algorithme.parseOrderVector(this.userAlgo);
+    this.orderVec   = Algorithm.parseOrderVector(this.userAlgo);
   }
 
   async run() {
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     try {
-      await new AsyncFunction('that', `
+      const asyncFunc = new AsyncFunction(`
         with (Sim.userVars) {
-          ${ Algorithme.awaitifyThat(this.userAlgo) }
+          ${ Algorithm.awaitifyThis(this.userAlgo) }
         }
-      `)(this);
+      `);
+      await asyncFunc.call(this);
     } catch (userError) {
       console.error('userError', userError); // for actual debugging
       Sim.showError(this.algoSource, userError.message);
     }
+  }
+
+  /**
+   * Replace function calls with `await`ed method invocations associated with `this` object.
+   * 
+   * @param {string} code
+   * @returns {string} Updated code
+   */
+  static awaitifyThis(code) {
+    // Prefix "p", "v", "sleep", and "traverse" calls with `await` and attach them to `this`
+    return code.replace(/\b(p|v|sleep|traverse)\(/g, 'await this.$1(');
   }
 
   async p(x) {
@@ -317,17 +325,6 @@ class Algorithme {
     return new Promise((resolve, _reject) => {
       setTimeout(resolve, secs * 1000);
     });
-  }
-
-  /**
-   * Prefix "p", "v", "sleep", and "circuler" with the `await` keyword
-   *   and attach them to the `that` object
-   * 
-   * @param {string} code
-   * @returns {string}
-   */
-  static awaitifyThat(code) {
-    return code.replace(/\b(p|v|sleep|circuler)\(/g, 'await that.$1(');
   }
 
   /**
@@ -348,10 +345,10 @@ class Algorithme {
 }
 
 
-class Changement extends Algorithme {
+class Controller extends Algorithm {
 
   constructor() {
-    super('changement');
+    super('controller');
     this.run();
     // ...
   }
@@ -359,8 +356,9 @@ class Changement extends Algorithme {
 }
 
 
-class Traversee extends Algorithme {
+class Traverser extends Algorithm {
 
+  // TODO: Rename to `counter`
   static count = 0;
   static freeColors = 'blue coral darkkhaki firebrick yellowgreen gray skyblue teal orange pink purple yellow'.split(' ');
 
@@ -377,22 +375,23 @@ class Traversee extends Algorithme {
   initElem() {
     this.$elem = document.createElement('span');
     this.$elem.classList.add('vehicle', this.type);
-    this.$elem.dataset.direction = this.algoSource === 'traversee1' ? 'down' : 'left';
+    this.$elem.dataset.direction = this.algoSource === 'traverser1' ? 'south' : 'west';
     this.$elem.style.backgroundColor = this.color;
     this.$elem.title = this.name; // (will be updated)
     this.$elem.style.order = '9999'; // HACK needless? (will be updated)
+    return this.$elem; // always return something
   }
 
-  async circuler() {
-    // start moving
+  async traverse() {
+    // "Restarting the engine takes some time" za3ma
     await this.sleep(Math.random());
-    // cross the intersection then "keep moving" and fade away...
+    // Cross the intersection then "keep moving" and fade away...
     await this.enterIntersection();
     await this.leaveIntersection();
   }
 
   async enterIntersection() {
-    Sim.ui.$carrefour.append(
+    Sim.ui.$intersection.append(
       this.$elem.parentNode.removeChild(this.$elem)
     )
     this.assertNoCollision();
@@ -407,7 +406,7 @@ class Traversee extends Algorithme {
   }
 
   assertNoCollision() {
-    const $c = Sim.ui.$carrefour;
+    const $c = Sim.ui.$intersection;
     const happened = $c.children.length > 1; // more than one vehicle crossing the intersection
     if (happened) {
       $c.dataset.state = 'collision'; // enum {'normal', 'collision'}
@@ -424,26 +423,27 @@ class Traversee extends Algorithme {
   }
 
   getUniqueId() {
-    return (++Traversee.count).toString(36).toUpperCase();
+    // FIXME: Should throw error when about to overflow? Althrough this sim won't run for a long time for this to happen
+    return (++Traverser.count).toString(36).toUpperCase();
   }
   
   getUniqueColor() {
-    return Traversee.freeColors.shift();
+    return Traverser.freeColors.shift();
   }
 
   destroy() {
-    Traversee.freeColors.push( this.color );
+    Traverser.freeColors.push( this.color );
     this.$elem.remove();
   }
 
   /**
    * 
-   * @param {Traversee} a 
-   * @param {Traversee} b 
+   * @param {Traverser} a 
+   * @param {Traverser} b 
    * @returns {number}
    */
-  static compareTraversees(a, b) {
-    return Traversee.compareVecs( a.getWaitVec(), b.getWaitVec() );
+  static compareTraversers(a, b) {
+    return Traverser.compareVecs( a.getWaitVec(), b.getWaitVec() );
   }
 
   /**
@@ -465,49 +465,49 @@ class Traversee extends Algorithme {
 }
 
 
-class Traversee1 extends Traversee {
+class Traverser1 extends Traverser {
 
   static MAX = 4;
 
   constructor() {
-    super('traversee1');
+    super('traverser1');
     this.init();
   }
 
   init() {
     this.initElem();
-    Sim.ui.$voie1.append(this.$elem);
-    Sim.voie1.push(this);
+    Sim.ui.$lane1.append(this.$elem);
+    Sim.lane1.push(this);
     this.run();
   }
 
   destroy() {
     super.destroy();
-    Sim.voie1.splice(Sim.voie1.findIndex(t => t === this), 1);
+    Sim.lane1.splice(Sim.lane1.findIndex(t => t === this), 1);
   }
 
 }
 
 
-class Traversee2 extends Traversee {
+class Traverser2 extends Traverser {
 
   static MAX = 7;
 
   constructor() {
-    super('traversee2');
+    super('traverser2');
     this.init();
   }
 
   init() {
     this.initElem();
-    Sim.ui.$voie2.append(this.$elem);
-    Sim.voie2.push(this);
+    Sim.ui.$lane2.append(this.$elem);
+    Sim.lane2.push(this);
     this.run();
   }
   
   destroy() {
     super.destroy();
-    Sim.voie2.splice(Sim.voie2.findIndex(t => t === this), 1);
+    Sim.lane2.splice(Sim.lane2.findIndex(t => t === this), 1);
   }
 
 }
