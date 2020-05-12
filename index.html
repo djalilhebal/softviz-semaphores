@@ -23,7 +23,7 @@
             {<input id="sema-names" type="text"
               placeholder="comma-separated identifiers"
               pattern="([A-Za-z$_][A-Za-z0-9$_]*)?(\s*,\s*([A-Za-z$_][A-Za-z0-9$_]*))*"
-              value="sFeu1, sFeu2, sVide1, sVide2"
+              value="sLight1, sLight2, sEmpty1, sEmpty2"
             />}
             =
             {<input id="sema-vals" type="text"
@@ -37,8 +37,8 @@
           <b>Integers</b>
             {<input id=int-names type="text"
               placeholder="comma-separated identifiers"
-              pattern="feu(\s*,\s*([A-Za-z$_][A-Za-z0-9$_]*))*"
-              value="feu"
+              pattern="light(\s*,\s*([A-Za-z$_][A-Za-z0-9$_]*))*"
+              value="light"
             />}
             =
             {<input id="int-vals" type="text"
@@ -46,50 +46,50 @@
               pattern="[12](\s*,\s*\d)*"
               value="1"
             />}
-            <br>
-            <strong>* <code>feu</code> must be in <code>{1, 2}</code></strong>
+          <br>
+          <strong>* <code>light</code> must be in <code>{1, 2}</code></strong>
         </div>
 
         <table role="presentation">
           <tr>
-            <th>Changement</th>
-            <th>Traversee1</th>
-            <th>Traversee2</th>
+            <th>Controller</th>
+            <th>Traverser1</th>
+            <th>Traverser2</th>
           </tr>
           <tr>
             <td>
-<textarea id="changement">while (1) {
-  sleep(15)//durée~
-  if (feu == 1) {
-    p(sFeu1)
-    feu = 2
-    v(sFeu2)
+<textarea id="controller">while (1) {
+  sleep(15) //interval
+  if (light == 1) {
+    p(sLight1)
+    light = 2
+    v(sLight2)
   } else {
-    p(sFeu2)
-    feu = 1
-    v(sFeu1)
+    p(sLight2)
+    light = 1
+    v(sLight1)
   }
 }</textarea>
             </td>
             <td>
-<textarea id="traversee1">p(sVide1)
-p(sFeu1)
-circuler()
-v(sFeu1)
-v(sVide1)</textarea>
+<textarea id="traverser1">p(sEmpty1)
+p(sLight1)
+traverse()
+v(sLight1)
+v(sEmpty1)</textarea>
             </td>
             <td>
-<textarea id="traversee2">p(sVide2)
-p(sFeu2)
-circuler()
-v(sFeu2)
-v(sVide2)</textarea>
+<textarea id="traverser2">p(sEmpty2)
+p(sLight2)
+traverse()
+v(sLight2)
+v(sEmpty2)</textarea>
             </td>
           </tr>
         </table>
 
         <div id="buttons">
-          <input id="btn-start" type="submit" value="Start!" />
+          <button id="btn-start" type="submit">Start!</button>
           <button id="btn-stop" disabled>Stop</button>
           <button id="btn-load-attempt">Load my attempt</button>
           <button id="btn-load-correct">Load correct solution</button>
@@ -98,64 +98,62 @@ v(sVide2)</textarea>
       </fieldset>
     </form>
 
-    <output id="sim" data-feu="0" data-chan-queued="false" role="img" form="inputs">
-      <span id="feu1" title="feu == 1"></span>
-      <div id="voie1" title="voie 1"></div>
+    <output id="sim" data-light="0" data-ctrl-queued="false" role="img" form="inputs">
+      <span id="light-1" title="light == 1"></span>
+      <div id="lane-1" title="lane 1"></div>
 
-      <div id="carrefour" title="carrefour" data-state="normal"></div>
+      <div id="intersection" title="intersection" data-state="normal"></div>
 
-      <span id="feu2" title="feu == 2"></span>
-      <div id="voie2" title="voie 2"></div>
+      <span id="light-2" title="light == 2"></span>
+      <div id="lane-2" title="lane 2"></div>
     </output>
 
   </main>
 
   <section>
-    <h2>Warnings</h2>
+    <h2>Exercice</h2>
     <pre>
-    - You must declare <code>feu</code> as <code>{1, 2}</code> (see the Problem section).
-
-    - For technical reasons, you need to call <code>sleep(0)</code> if you're going to use an "active wait" loop of some kind that does not contain any call to our predefined functions.
-
-    - The 'stop' and 'restart' functionalities are not fully implemented and so you will need to refresh the page to test different algorithms (TO BE FIXED later~).
-    (You can still call <code>Sim.stop()</code> from the console and it will kinda work.)
-
-    - Keep this in mind if you're using loops and conditionals:
-    Sorting each road's vehicles with multiple dynamic queues (semaphores) is tricky. The ordering priority I used depends on calls to p(..);
-    e.g. <code>p(sFeu); p(sVide);</code> creates <code>orderVec=['sFeu', 'sVide']</code> that will be used to sort each vehicle in each road.
-  </pre>
-  </section>
-
-  <section>
-    <h2>Problem / Exo</h2>
-    <pre>
-    EN FRANÇAIS: <a href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>)
+    EN FRANÇAIS: <a hreflang="fr" href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>)
 
 
     <b>Traffic Lights:</b>
-    At an intersection, traffic is controlled by traffic lights...
+    At an intersection, traffic is controlled by traffic lights (also known as "semaphores).
 
     Rules:
     - The intersection can contain at most one vehicle.
     - Vehicles arrive at both roads in a random manner.
     - Traffic lights of each road periodically change color (red or green), and hold that color for a finite period of time.
-    - The traffic lights controller (Changement) should wait <em>only for the current vehicle</em> at the intersection to leave before changing lights.
+    - The traffic lights controller (Controller) should wait <em>only for the current vehicle</em> at the intersection to leave before changing lights.
 
     For the sake of simplicity, we assume that:
     - it is an intersection of two one-lane roads
     - vehicles don't change direction, and keep moving in a straight line
 
     This system can be modeled as a set of parallel processes:
-    - A process <b>P</b> that executes the Changement procedure which handles both traffic lights.
-    - A process for each vehicle (Traversee<sub>i</sub> if on voie<sub>i</sub>; where i = {1, 2})
-    - Traffic light of voie<sub>i</sub> is green when <code>feu == i</code>.
-    (Hint: Traffic lights display a yellow circle when 'Changement' is blocked on a semaphore)
+    - A process <b>P</b> that executes the Controller procedure which handles both traffic lights.
+    - A process for each vehicle (Traverser<sub>i</sub> if on voie<sub>i</sub>; where i = {1, 2})
+    - The traffic light of lane<sub>i</sub> is green when <code>light == i</code>.
+    (Hint: Traffic lights display a yellow circle when 'Controller' is blocked on a semaphore)
 
-    <strong>Predefined functions</strong>: <code>p(sema)</code>, <code>v(sema)</code>, <code>sleep(secs)</code>, in addition to Traversee's <code>circuler()</code>.
+    <strong>Predefined functions</strong>: <code>p(sema)</code>, <code>v(sema)</code>, <code>sleep(secs)</code>, in addition to Traverser's <code>traverse()</code>.
 
-    Write <b>Changement</b>, as well as the <b>Traversee1</b> and <b>Traversee2</b> procedures to synchronize the system using semaphores.
+    Write <b>Controller</b>, as well as the <b>Traverser1</b> and <b>Traverser2</b> procedures to synchronize the system using semaphores.
 
-    Gambatte~
+    <i>Gambatte~</i>
+    </pre>
+  </section>
+  
+  <section>
+    <h2>Warnings</h2>
+    <pre>
+    - For technical reasons, you need to call <code>sleep(0)</code> if you're going to use an "active wait" loop of some kind that does not contain any call to our predefined functions.
+
+    - The 'stop' and 'restart' functionalities are not fully implemented and so you will need to refresh the page to test different algorithms (TO BE FIXED later).
+    (You can still call <code>Sim.stop()</code> from the console and it will kinda work.)
+
+    - Keep this in mind if you're using loops and conditionals:
+    Sorting each road's vehicles with multiple dynamic queues (semaphores) is tricky. The ordering priority I used depends on calls to p(..);
+    e.g. <code>p(sLight); p(sEmpty);</code> creates <code>orderVec = ['sLight', 'sEmpty']</code> that will be used to sort each vehicle in each road.
   </pre>
   </section>
   
@@ -180,8 +178,8 @@ v(sVide2)</textarea>
   </section>
 
   <section>
-    <h2>Refs</h2>
-    These are some of the cool documents and topics I checked while making this...<br />
+    <h2>References and Good Reads</h2>
+    <p>These are some of the cool documents and topics I checked while making this...</p>
     <pre>
     - [1]: Steve Carr and Jean Mayo and Ching-kuang Shene, <i>ThreadMentor: A Pedagogical Tool for Multithreaded Programming</i> (<a href="https://pages.mtu.edu/~shene/NSF-3/e-Book/index.html">tutorial</a>)
 
@@ -204,17 +202,17 @@ v(sVide2)</textarea>
 
   <section>
     <h2>Credits</h2>
-    <pre>
-    - 'City car', 'Truck', 'Traffic lights green', and 'Traffic lights red' icons by <a href="http://delapouite.com">Delapouite</a> under CC BY 3.0
-    - <a href="https://github.com/zeit">@ZEIT</a>'s <code>async-sema</code> package (under the MIT license) heavily inspired my SillySemaphore
-    </pre>
+    <ul>
+      <li>'City car', 'Truck', 'Traffic lights green', and 'Traffic lights red' icons by <a href="http://delapouite.com">Delapouite</a> under CC BY 3.0.</li>
+      <li><a href="https://github.com/zeit">@ZEIT</a>'s <code>async-sema</code> package (under the MIT license) heavily inspired my SillySemaphore.</li>
+    </ul>
   </section>
   
   <footer>
-    Made by <a href="https://twitter.com/djalilhebal">@djalilhebal</a>, under CC BY 3.0, <a href="https://github.com/djalilhebal/softviz-semaphores">source code available on GitHub</a>
+    <p>Made by <a href="https://twitter.com/djalilhebal">@djalilhebal</a>, under CC BY 3.0, <a href="https://github.com/djalilhebal/softviz-semaphores">source code available on GitHub</a></p>
   </footer>
 
-  <script src="presets.js"></script>
   <script src="index.js"></script>
+  <script src="presets.js"></script>
 </body>
 </html>

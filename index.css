@@ -4,20 +4,16 @@
 }
 
 body {
-  background: snow;
+  background: #efefef;
   text-align: center;
 }
 
 header {
-  margin: 1em;
+  padding: 1em;
 }
 
 a {
-  text-decoration: none;
-  color: darkred;
-}
-a:hover {
-  text-decoration: underline;
+  color: purple;
 }
 
 code {
@@ -26,10 +22,17 @@ code {
   padding: 1px 2px;
 }
 
+ul {
+  list-style-type: square;
+  margin: inherit;
+}
+
 /********************************/
 
-form {
-  background: #ccc;
+main {
+    margin: 20px 50px;
+    background: #ccc;
+    padding: 20px;
 }
 
 fieldset {
@@ -53,7 +56,7 @@ table {
 #user-vars input {
   color: blue;
   font-size: 17px;
-  min-width: 250px;
+  min-width: 280px;
   outline: none;
   border: 0;
   border-bottom: 2px dashed;
@@ -75,7 +78,22 @@ textarea[title] {
 }
 
 #buttons {
-  margin: 3px 0;
+  margin: 5px 0;
+}
+
+#buttons button {
+  border: 3px solid rebeccapurple;
+  padding: 5px;
+  background: purple;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+}
+#buttons button[disabled], fieldset[disabled] #buttons button {
+  font-weight: normal;
+  cursor: not-allowed;
+  background: dimgray;
 }
 
 /********************************/
@@ -95,7 +113,7 @@ textarea[title] {
   position: absolute;
 }
 
-#feu1, #feu2 {
+#light-1, #light-2 {
   background-color: red;
   background-image: url(images/traffic-lights-red.svg);
   width: 50px;
@@ -104,54 +122,51 @@ textarea[title] {
   border-radius: 50%;
   border: 3px solid transparent;
 }
-#sim[data-chan-queued="true"] #feu1, #sim[data-chan-queued="true"] #feu2 {
+#sim[data-ctrl-queued="true"] #light-1, #sim[data-ctrl-queued="true"] #light-2 {
   border-color: yellow;
 }
 
-#sim[data-feu="0"] #feu1, #sim[data-feu="0"] #feu2 {
+#sim[data-light="0"] #light-1, #sim[data-light="0"] #light-2 {
   background-color: gray !important;
 }
-#sim[data-feu="1"] #feu1 {
+#sim[data-light="1"] #light-1 {
   background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
-#sim[data-feu="2"] #feu2 {
+#sim[data-light="2"] #light-2 {
   background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
 
-#feu1 {
+#light-1 {
   top: 75px;
   left: 120px;
 }
-#feu2 {
-  top: 170px;
+#light-2 {
+  top: 180px;
 }
 
-#voie1, #voie2 {
+#lane-1, #lane-2 {
   background: white;
   display: flex;
-  padding: 5px;
   z-index: 1;
 }
 
-#voie1 {
+#lane-1 {
   flex-direction: column-reverse;
+  left: 180px;
   width: 50px;
   height: 210px;
-  padding: 0px;
   padding-bottom: 150px;
-  left: 180px;
 }
-#voie2 {
-  height: 50px;
+#lane-2 {
   bottom: 70px;
+  height: 50px;
   width: 380px;
-  padding: 0;
   padding-left: 260px;
 }
 
-#carrefour {
+#intersection {
   background: white;
   width: 100px;
   height: 100px;
@@ -162,7 +177,7 @@ textarea[title] {
   left: 155px;
   z-index: 2;
 }
-#carrefour[data-state="collision"] {
+#intersection[data-state="collision"] {
   background: radial-gradient(red, transparent);
 }
 
@@ -180,18 +195,18 @@ textarea[title] {
 .car { background-image: url(images/city-car.svg); }
 .truck { background-image: url(images/truck.svg); }
 
-.vehicle[data-direction="down"] { transform: rotateZ(90deg); }
-.vehicle[data-direction="left"] { transform: rotateY(180deg); }
+.vehicle[data-direction="south"] { transform: rotateZ(90deg); }
+.vehicle[data-direction="west"] { transform: rotateY(180deg); }
 
-#carrefour[data-state="normal"] .vehicle[data-state="leaving"] {
+#intersection[data-state="normal"] .vehicle[data-state="leaving"] {
   opacity: 0;
 }
-#carrefour[data-state="normal"] .vehicle[data-state="leaving"][data-direction="down"] {
+#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="south"] {
   transform:
     translateY(75px)
     rotateZ(90deg);
 }
-#carrefour[data-state="normal"] .vehicle[data-state="leaving"][data-direction="left"] {
+#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="west"] {
   transform:
     translateX(-75px)
     rotateY(180deg);

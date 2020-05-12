@@ -1,86 +1,87 @@
 const myAttempt = {
 
-semaNames: 'sFeu, sVide',
+semaNames: 'sLight, sEmpty',
 semaVals: '1, 1',
 
-intNames: 'feu',
+intNames: 'light',
 intVals: '1',
 
-changement:
+controller:
 `while (true) {
-  sleep(15)//interval
-  p(sFeu)
-  if (feu == 1) {
-    feu = 2
+  sleep(15) //interval
+  p(sLight)
+  if (light == 1) {
+    light = 2
   } else {
-    feu = 1
+    light = 1
   }
-  v(sFeu)
+  v(sLight)
 }`,
 
-traversee1:
+traverser1:
 `while (true) {
-  p(sFeu)
-  if (feu == 1) {
-    p(sVide)
-    circuler()
-    v(sVide)
-    v(sFeu)
+  p(sLight)
+  if (light == 1) {
+    p(sEmpty)
+    traverse()
+    v(sEmpty)
+    v(sLight)
     break;
   }
-  v(sFeu)
+  v(sLight)
 }`,
 
-traversee2:
+traverser2:
 `while (true) {
-  p(sFeu)
-  if (feu == 2) {
-    p(sVide)
-    circuler()
-    v(sVide)
-    v(sFeu)
+  p(sLight)
+  if (light == 2) {
+    p(sEmpty)
+    traverse()
+    v(sEmpty)
+    v(sLight)
     break;
   }
-  v(sFeu)
+  v(sLight)
 }`,
 
 }
 
 const correctAnswer = {
 
-semaNames: 'sFeu1, sFeu2, sVide1, sVide2',
+semaNames: 'sLight1, sLight2, sEmpty1, sEmpty2',
 semaVals: '1, 0, 1, 1',
 
-intNames: 'feu',
+intNames: 'light',
 intVals: '1',
 
-changement:
+controller:
 `while (1) {
-  sleep(15)//durée~
-  if (feu == 1) {
-    p(sFeu1)
-    feu = 2
-    v(sFeu2)
+  sleep(15) //interval
+  if (light == 1) {
+    p(sLight1)
+    light = 2
+    v(sLight2)
   } else {
-    p(sFeu2)
-    feu = 1
-    v(sFeu1)
+    p(sLight2)
+    light = 1
+    v(sLight1)
   }
 }`,
 
-traversee1:
-`p(sVide1)
-p(sFeu1)
-circuler()
-v(sFeu1)
-v(sVide1)`,
+traverser1:
+`p(sEmpty1)
+p(sLight1)
+traverse()
+v(sLight1)
+v(sEmpty1)`,
 
-traversee2: `p(sVide2)
-p(sFeu2)
-circuler()
-v(sFeu2)
-v(sVide2)`,
+traverser2: `p(sEmpty2)
+p(sLight2)
+traverse()
+v(sLight2)
+v(sEmpty2)`,
 
 }
 
-const presets = {myAttempt, correctAnswer};
+// Export, sorta
+Sim.presets = {myAttempt, correctAnswer};
