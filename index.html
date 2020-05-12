@@ -13,7 +13,7 @@
     <p class="subtitle">Nerdyfying a college course exercise #ConcurrentProgramming #Visualization</p>
   </header>
   <main>
-    <form autocomplete="off" spellcheck="false">
+    <form id="inputs" autocomplete="off" spellcheck="false">
       <fieldset>
 
         <div id="user-vars">
@@ -50,7 +50,7 @@
             <strong>* <code>feu</code> must be in <code>{1, 2}</code></strong>
         </div>
 
-        <table>
+        <table role="presentation">
           <tr>
             <th>Changement</th>
             <th>Traversee1</th>
@@ -98,7 +98,7 @@ v(sVide2)</textarea>
       </fieldset>
     </form>
 
-    <div id="sim" role="img" data-feu="0" data-chan-queued="false">
+    <output id="sim" data-feu="0" data-chan-queued="false" role="img" form="inputs">
       <span id="feu1" title="feu == 1"></span>
       <div id="voie1" title="voie 1"></div>
 
@@ -106,7 +106,7 @@ v(sVide2)</textarea>
 
       <span id="feu2" title="feu == 2"></span>
       <div id="voie2" title="voie 2"></div>
-    </div>
+    </output>
 
   </main>
 
