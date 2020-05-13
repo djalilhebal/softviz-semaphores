@@ -1,4 +1,6 @@
 * {
+  /* Use natural box layout model */
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 0;
 }
@@ -30,9 +32,10 @@ ul {
 /********************************/
 
 main {
-    margin: 20px 50px;
-    background: #ccc;
-    padding: 20px;
+  margin: 10px auto;
+  background: #ccc;
+  padding: 25px;
+  max-width: 900px;
 }
 
 fieldset {
@@ -41,14 +44,14 @@ fieldset {
 
 table {
   background: white;
-  margin: auto;
+  width: 100%;
 }
 
 #user-vars {
   background: white;
   text-align: left;
   padding: 5px;
-  margin: 5px;
+  margin-bottom: 5px;
   line-height: 2;
   font-size: 17px;
 }
@@ -151,19 +154,20 @@ textarea[title] {
   display: flex;
   z-index: 1;
 }
-
 #lane-1 {
   flex-direction: column-reverse;
   left: 180px;
   width: 50px;
-  height: 210px;
+  height: 100%;
+  /* To 'hold' vehicles before the intersection */
   padding-bottom: 150px;
 }
 #lane-2 {
   bottom: 70px;
   height: 50px;
-  width: 380px;
-  padding-left: 260px;
+  width: 100%;
+  /* To 'hold' vehicles before the intersection */
+  padding-left: 255px;
 }
 
 #intersection {
@@ -173,7 +177,7 @@ textarea[title] {
   border-radius: 50%;
   display: grid;
   place-items: center center;
-  top: 215px;
+  top: 210px;
   left: 155px;
   z-index: 2;
 }
@@ -203,7 +207,7 @@ textarea[title] {
 }
 #intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="south"] {
   transform:
-    translateY(75px)
+    translateY(70px)
     rotateZ(90deg);
 }
 #intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="west"] {
