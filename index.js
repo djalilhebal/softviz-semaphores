@@ -1,4 +1,7 @@
+//@ts-check
 /**
+ * Utility function
+ * 
  * @param {Array} arrA
  * @param {Array} arrB
  * @returns {Object}
@@ -72,6 +75,7 @@ class Sim {
   static ctrl  = null;
   static lane1 = [];
   static lane2 = [];
+  static crossing = 0;
 
   static ui = {};
   static creatorInterval = null;
@@ -134,10 +138,6 @@ class Sim {
       $traverser2: $('#traverser2'),
 
       $sim: $('#sim'),
-      $light1: $('#light-1'),
-      $light2: $('#light-2'),
-      $lane1: $('#lane-1'),
-      $lane2: $('#lane-2'),
       $intersection: $('#intersection'),
     })
 
@@ -204,6 +204,7 @@ class Sim {
 
     if (Math.random() < 0.5) {
       if (Sim.lane1.length < Traverser1.MAX) {
+        // TODO: .push() here
         const t1 = new Traverser1();
         return true;
       }
@@ -245,7 +246,7 @@ class Sim {
    * @param {number} i - index 
    */
   static redrawTraverser(t, i) {
-    t.$elem.style.order = String(i);
+    t.$elem.style.setProperty('--pos', i);
     t.$elem.title =
       `${t.name}\n\n` +
       `orderVec: {${t.orderVec.join(', ')}}\n` +
@@ -369,21 +370,22 @@ class Traverser extends Algorithm {
     this.color = this.getUniqueColor();
     this.type = Math.random() < 0.25 ? 'truck' : 'car'; // 25% chance of being a truck
     this.name = `${this.color} ${this.type} #${this.id}`;
+    this.dir = this.algoSource === 'traverser1' ? 'south' : 'west';
     this.$elem = null;
   }
 
   initElem() {
     this.$elem = document.createElement('span');
-    this.$elem.classList.add('vehicle', this.type);
-    this.$elem.dataset.direction = this.algoSource === 'traverser1' ? 'south' : 'west';
+    this.$elem.classList.add('vehicle', this.type, this.dir);
     this.$elem.style.backgroundColor = this.color;
     this.$elem.title = this.name; // (will be updated)
-    this.$elem.style.order = '9999'; // HACK needless? (will be updated)
+    this.$elem.style.setProperty('--pos', 'traverser1' ? '4' : '7'); // Position it at the very end of the line (will be updated)
     return this.$elem; // always return something
   }
 
   async traverse() {
     // "Restarting the engine takes some time" za3ma
+    // Adds an element of "randomness"
     await this.sleep(Math.random());
     // Cross the intersection then "keep moving" and fade away...
     await this.enterIntersection();
@@ -391,25 +393,23 @@ class Traverser extends Algorithm {
   }
 
   async enterIntersection() {
-    Sim.ui.$intersection.append(
-      this.$elem.parentNode.removeChild(this.$elem)
-    )
+    Sim.crossing++;
+    this.$elem.dataset.state = 'leaving';
     this.assertNoCollision();
-    await this.sleep(1);
+    await this.sleep(0.5);
   }
 
   async leaveIntersection() {
-    this.$elem.dataset.state = 'leaving';
     await this.sleep(1);
     this.assertNoCollision();
     this.destroy();
+    Sim.crossing--;
   }
 
   assertNoCollision() {
-    const $c = Sim.ui.$intersection;
-    const happened = $c.children.length > 1; // more than one vehicle crossing the intersection
+    const happened = Sim.crossing > 1; // more than one vehicle crossing the intersection
     if (happened) {
-      $c.dataset.state = 'collision'; // enum {'normal', 'collision'}
+      Sim.ui.$sim.dataset.state = 'error';
       throw new Error('Collision!');
     }
   }
@@ -476,7 +476,7 @@ class Traverser1 extends Traverser {
 
   init() {
     this.initElem();
-    Sim.ui.$lane1.append(this.$elem);
+    Sim.ui.$intersection.append(this.$elem);
     Sim.lane1.push(this);
     this.run();
   }
@@ -500,7 +500,7 @@ class Traverser2 extends Traverser {
 
   init() {
     this.initElem();
-    Sim.ui.$lane2.append(this.$elem);
+    Sim.ui.$intersection.append(this.$elem);
     Sim.lane2.push(this);
     this.run();
   }

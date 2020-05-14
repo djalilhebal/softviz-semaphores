@@ -68,10 +68,28 @@ table {
   border-bottom: 2px solid;
 }
 
-textarea {
+#user-algorithms {
+  background: white;
+}
+
+#user-algorithms legend {
+  font-size: 30px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#user-algorithms label {
+  width: 30%;
+  background-color: white;
+  display: inline-block;
+  font-weight: bold;
+}
+
+#user-algorithms textarea {
   color: blue;
   height: 150px;
-  width: 200px;
+  width: 100%;
   padding: 3px;
   /* outline: none; */
 }
@@ -149,71 +167,123 @@ textarea[title] {
   top: 180px;
 }
 
-#lane-1, #lane-2 {
+#intersection, #lane-1, #lane-2 {
   background: white;
-  display: flex;
-  z-index: 1;
 }
+
 #lane-1 {
-  flex-direction: column-reverse;
   left: 180px;
   width: 50px;
   height: 100%;
-  /* To 'hold' vehicles before the intersection */
-  padding-bottom: 150px;
 }
+
 #lane-2 {
   bottom: 70px;
   height: 50px;
   width: 100%;
-  /* To 'hold' vehicles before the intersection */
-  padding-left: 255px;
 }
 
 #intersection {
-  background: white;
+  border-radius: 50%;
   width: 100px;
   height: 100px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center center;
   top: 210px;
   left: 155px;
-  z-index: 2;
+  display: grid;
+  place-items: center center;
+  z-index: 1;
 }
-#intersection[data-state="collision"] {
+#sim[data-state="error"] #intersection {
   background: radial-gradient(red, transparent);
 }
 
 .vehicle {
   width: 45px;
   height: 45px;
+  margin: 2px;
   display: inline-block;
   background-color: black;
   background-repeat: no-repeat;
   background-position: center;
-  margin: 2px;
   opacity: 1;
-  transition: opacity 2s, transform 1s;
+  transition: transform 0.3s; /* TODO: Tweak it by observing "My attempt" */
+  position: absolute;
+  z-index: 2;
 }
 .car { background-image: url(images/city-car.svg); }
 .truck { background-image: url(images/truck.svg); }
 
-.vehicle[data-direction="south"] { transform: rotateZ(90deg); }
-.vehicle[data-direction="west"] { transform: rotateY(180deg); }
+#sim[data-state="error"] .vehicle[data-state="leaving"] {
+  transform: none;
+  position: static;
+  animation: none;
+}
 
-#intersection[data-state="normal"] .vehicle[data-state="leaving"] {
+.vehicle.west {
+  --rotate-y: 180deg;
+  --rotate-z: 0deg;
+
+  --delta-x: 50;
+  --delta-y: 0;
+}
+
+.vehicle.south {
+  --rotate-y: 0deg;
+  --rotate-z: 90deg;
+
+  --delta-x: 0;
+  --delta-y: -50;
+}
+
+.vehicle {
+  transform:
+    translate(
+      calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
+      calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
+     )
+
+    rotateY(var(--rotate-y))
+    rotateZ(var(--rotate-z));
+}
+
+.vehicle[data-state="new"] {
   opacity: 0;
 }
-#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="south"] {
-  transform:
-    translateY(70px)
-    rotateZ(90deg);
+
+.vehicle[data-state="leaving"] {
+  opacity: 1;
+  animation: 1.5s leaving forwards;
 }
-#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="west"] {
-  transform:
-    translateX(-75px)
-    rotateY(180deg);
+
+@keyframes leaving {
+  0% {
+    opacity: 1;
+    transform:
+      translate(
+        calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
+        calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
+      )
+
+      rotateY(var(--rotate-y))
+      rotateZ(var(--rotate-z));
+  }
+
+  50% {
+    opacity: 1;
+  }
+  
+  100% {
+    opacity: 0;
+    transform:
+      translate(
+        calc(var(--delta-x) * -2.5px),
+        calc(var(--delta-y) * -1.5px)
+      )
+
+      rotateY(var(--rotate-y))
+      rotateZ(var(--rotate-z));
+  }
+
 }
 
 /********************************/

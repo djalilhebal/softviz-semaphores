@@ -10,7 +10,7 @@
 <body>
   <header>
     <h1>Semaphores: Traffic Sim</h1>
-    <p class="subtitle">Nerdyfying a college course exercise #ConcurrentProgramming #Visualization</p>
+    <p class="subtitle">Nerdyfying a college course exercise <i>#ConcurrentProgramming #Visualization</i></p>
   </header>
   <main>
     <form id="inputs" autocomplete="off" spellcheck="false">
@@ -50,14 +50,10 @@
           <strong>* <code>light</code> must be in <code>{1, 2}</code></strong>
         </div>
 
-        <table role="presentation">
-          <tr>
-            <th>Controller</th>
-            <th>Traverser1</th>
-            <th>Traverser2</th>
-          </tr>
-          <tr>
-            <td>
+        <fieldset id="user-algorithms">
+          <legend>Algorithms</legend>
+
+<label>Controller
 <textarea id="controller">while (1) {
   sleep(15) //interval
   if (light == 1) {
@@ -70,23 +66,25 @@
     v(sLight1)
   }
 }</textarea>
-            </td>
-            <td>
+</label>
+
+<label>Traverser1
 <textarea id="traverser1">p(sEmpty1)
 p(sLight1)
 traverse()
 v(sLight1)
 v(sEmpty1)</textarea>
-            </td>
-            <td>
+</label>
+
+<label>Traverser2
 <textarea id="traverser2">p(sEmpty2)
 p(sLight2)
 traverse()
 v(sLight2)
 v(sEmpty2)</textarea>
-            </td>
-          </tr>
-        </table>
+</label>
+
+</fieldset>
 
         <div id="buttons">
           <button id="btn-start" type="submit">Start!</button>
@@ -98,14 +96,15 @@ v(sEmpty2)</textarea>
       </fieldset>
     </form>
 
-    <output id="sim" data-light="0" data-ctrl-queued="false" role="img" form="inputs">
+    <output id="sim" role="img" form="inputs"
+            data-light="0" data-ctrl-queued="false" data-state="normal">
       <span id="light-1" title="light == 1"></span>
-      <div id="lane-1" title="lane 1"></div>
+      <div id="lane-1" title="lane #1"></div>
 
-      <div id="intersection" title="intersection" data-state="normal"></div>
+      <div id="intersection" title="intersection"></div>
 
       <span id="light-2" title="light == 2"></span>
-      <div id="lane-2" title="lane 2"></div>
+      <div id="lane-2" title="lane #2"></div>
     </output>
 
   </main>
@@ -113,7 +112,7 @@ v(sEmpty2)</textarea>
   <section>
     <h2>Exercice</h2>
     <pre>
-    EN FRANÇAIS: <a hreflang="fr" href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>)
+      <i lang="fr"></i>En français: <a hreflang="fr" href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>)</i>
 
 
     <b>Traffic Lights:</b>
@@ -170,8 +169,7 @@ v(sEmpty2)</textarea>
       - <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction">AsyncFunction</a>
       - <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>
       - SillySemaphore: My stupid Promise-based and queue-based semaphore
-      - <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/order">CSS order</a>
-      - <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transition">CSS transition</a>
+      - <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transition">CSS transition</a> and <code>transform: translate(..) rotate(..)</code>
 
     * Developed and tested with <a href="https://brave.com/dre744">Brave Browser</a> v1.1 (Chromium v79.0)
     </pre>
