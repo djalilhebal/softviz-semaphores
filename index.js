@@ -1,4 +1,7 @@
+//@ts-check
 /**
+ * Utility function
+ * 
  * @param {Array} arrA
  * @param {Array} arrB
  * @returns {Object}
@@ -72,6 +75,7 @@ class Sim {
   static ctrl  = null;
   static lane1 = [];
   static lane2 = [];
+  static crossing = 0;
 
   static ui = {};
   static creatorInterval = null;
@@ -82,6 +86,8 @@ class Sim {
     Sim.clearErrors();
     Sim.loadUserInputs();
     Sim.ui.$fieldset.disabled = true;
+    Sim.ctrl = new Controller();
+    Sim.ctrl.run();
     Sim.initCreator();
     Sim.redraw();
   }
@@ -105,11 +111,9 @@ class Sim {
     }
 
     function freeThreads() {
+      // TODO:
       // - kill "threads" (maybe simply call .destory() of each existing Traverser)
-      // ...
-
       // - cancel Controller 'ctrl' (AFAIK you can not cancel Promises...)
-      // ...
     }
 
     Sim.ui.$fieldset.disabled = false;
@@ -134,10 +138,6 @@ class Sim {
       $traverser2: $('#traverser2'),
 
       $sim: $('#sim'),
-      $light1: $('#light-1'),
-      $light2: $('#light-2'),
-      $lane1: $('#lane-1'),
-      $lane2: $('#lane-2'),
       $intersection: $('#intersection'),
     })
 
@@ -187,39 +187,42 @@ class Sim {
   }
 
   static initCreator() {
-    Sim.ctrl = new Controller();
-    // maybe create a new instance of Traverser every 2 secs
-    Sim.creatorInterval = setInterval(Sim.maybeCreateTraverser, 2 * 1000);
+    // maybe create a new instance of Traverser every second
+    Sim.creatorInterval = setInterval(Sim.maybeCreateTraverser, 1 * 1000);
   }
 
   /**
-   * Maybe create a new instance of Traverser
-   * @returns {boolean} True if a new instance was created; false otherwise.
+   * Maybe create a new instance of Traverser and run it
+   * @returns {Traverser} The newly created traverser or null.
    */
   static maybeCreateTraverser() {
     // maybe not
     if (Math.random() < 0.5) {
-      return false;
+      return null;
     }
 
     if (Math.random() < 0.5) {
       if (Sim.lane1.length < Traverser1.MAX) {
         const t1 = new Traverser1();
-        return true;
+        Sim.lane1.push(t1);
+        t1.run();
+        return t1;
       }
     } else {
       if (Sim.lane2.length < Traverser2.MAX) {
         const t2 = new Traverser2();
-        return true;
+        Sim.lane2.push(t2);
+        t2.run();
+        return t2;
       }
     }
 
     // no room for a new 'Traverser' in the randomly chosen 'lane'
-    return false;
+    return null;
   }
 
   static redraw() {
-    // Just update 'data-*' and 'order' values, and let CSS take care of the rest.
+    // Just update 'data-*' and '--pos' values, and let CSS take care of the rest.
 
     // Traffic light
     const {ui, ctrl, userVars} = Sim;
@@ -233,7 +236,7 @@ class Sim {
     lane1.forEach(redrawTraverser);
     lane2.forEach(redrawTraverser);
 
-    // XXX: Maybe it's better to use Proxy(userVars) and redraw after its attributes are accessed..
+    // FIXME: Maybe it's better to use Proxy(userVars) and redraw after its attributes are accessed..
     // Redraw before each repaint
     requestAnimationFrame(Sim.redraw);
   }
@@ -245,7 +248,7 @@ class Sim {
    * @param {number} i - index 
    */
   static redrawTraverser(t, i) {
-    t.$elem.style.order = String(i);
+    t.$elem.style.setProperty('--pos', i);
     t.$elem.title =
       `${t.name}\n\n` +
       `orderVec: {${t.orderVec.join(', ')}}\n` +
@@ -349,8 +352,6 @@ class Controller extends Algorithm {
 
   constructor() {
     super('controller');
-    this.run();
-    // ...
   }
 
 }
@@ -358,8 +359,7 @@ class Controller extends Algorithm {
 
 class Traverser extends Algorithm {
 
-  // TODO: Rename to `counter`
-  static count = 0;
+  static counter = 0;
   static freeColors = 'blue coral darkkhaki firebrick yellowgreen gray skyblue teal orange pink purple yellow'.split(' ');
 
   constructor(algoSource) {
@@ -370,20 +370,39 @@ class Traverser extends Algorithm {
     this.type = Math.random() < 0.25 ? 'truck' : 'car'; // 25% chance of being a truck
     this.name = `${this.color} ${this.type} #${this.id}`;
     this.$elem = null;
+
+    // FIXME: These attributes are set by children
+    this.lane = null;
+    this.dir = this.algoSource === 'traverser1' ? 'south' : 'west';
+    this.initialPos = 'traverser1' ? '4' : '7'; // the very end of the line
   }
 
+  /**
+   * Create a new visual element and display it on page
+   */
   initElem() {
     this.$elem = document.createElement('span');
-    this.$elem.classList.add('vehicle', this.type);
-    this.$elem.dataset.direction = this.algoSource === 'traverser1' ? 'south' : 'west';
-    this.$elem.style.backgroundColor = this.color;
+    this.$elem.classList.add('vehicle', this.type, this.dir);
     this.$elem.title = this.name; // (will be updated)
-    this.$elem.style.order = '9999'; // HACK needless? (will be updated)
+    this.$elem.style.setProperty('--pos', this.initialPos); // (will be updated)
+    this.$elem.style.setProperty('--color', this.color);
+    Sim.ui.$intersection.append(this.$elem);
     return this.$elem; // always return something
+  }
+
+  destroyElem() {
+    Traverser.freeColors.push(this.color);
+    this.$elem.remove();
+  }
+
+  destroy() {
+    this.destroyElem();
+    this.lane.splice(this.lane.findIndex(t => t === this), 1);
   }
 
   async traverse() {
     // "Restarting the engine takes some time" za3ma
+    // Adds an element of "randomness"
     await this.sleep(Math.random());
     // Cross the intersection then "keep moving" and fade away...
     await this.enterIntersection();
@@ -391,25 +410,23 @@ class Traverser extends Algorithm {
   }
 
   async enterIntersection() {
-    Sim.ui.$intersection.append(
-      this.$elem.parentNode.removeChild(this.$elem)
-    )
+    Sim.crossing++;
+    this.$elem.dataset.state = 'leaving';
     this.assertNoCollision();
-    await this.sleep(1);
+    await this.sleep(0.5);
   }
 
   async leaveIntersection() {
-    this.$elem.dataset.state = 'leaving';
     await this.sleep(1);
     this.assertNoCollision();
     this.destroy();
+    Sim.crossing--;
   }
 
   assertNoCollision() {
-    const $c = Sim.ui.$intersection;
-    const happened = $c.children.length > 1; // more than one vehicle crossing the intersection
+    const happened = Sim.crossing > 1; // more than one vehicle crossing the intersection
     if (happened) {
-      $c.dataset.state = 'collision'; // enum {'normal', 'collision'}
+      Sim.ui.$sim.dataset.state = 'error';
       throw new Error('Collision!');
     }
   }
@@ -424,16 +441,11 @@ class Traverser extends Algorithm {
 
   getUniqueId() {
     // FIXME: Should throw error when about to overflow? Althrough this sim won't run for a long time for this to happen
-    return (++Traverser.count).toString(36).toUpperCase();
+    return (++Traverser.counter).toString(36).toUpperCase();
   }
   
   getUniqueColor() {
     return Traverser.freeColors.shift();
-  }
-
-  destroy() {
-    Traverser.freeColors.push( this.color );
-    this.$elem.remove();
   }
 
   /**
@@ -471,19 +483,8 @@ class Traverser1 extends Traverser {
 
   constructor() {
     super('traverser1');
-    this.init();
-  }
-
-  init() {
     this.initElem();
-    Sim.ui.$lane1.append(this.$elem);
-    Sim.lane1.push(this);
-    this.run();
-  }
-
-  destroy() {
-    super.destroy();
-    Sim.lane1.splice(Sim.lane1.findIndex(t => t === this), 1);
+    this.lane = Sim.lane1;
   }
 
 }
@@ -495,21 +496,10 @@ class Traverser2 extends Traverser {
 
   constructor() {
     super('traverser2');
-    this.init();
-  }
-
-  init() {
     this.initElem();
-    Sim.ui.$lane2.append(this.$elem);
-    Sim.lane2.push(this);
-    this.run();
+    this.lane = Sim.lane2;
   }
   
-  destroy() {
-    super.destroy();
-    Sim.lane2.splice(Sim.lane2.findIndex(t => t === this), 1);
-  }
-
 }
 
 Sim.setup();

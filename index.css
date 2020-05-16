@@ -1,4 +1,10 @@
-* {
+/*
+ * General stuff
+ **************************/
+
+ * {
+  /* Use natural box layout model */
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 0;
 }
@@ -12,8 +18,25 @@ header {
   padding: 1em;
 }
 
+h2 {
+  margin-bottom: 1rem;
+}
+
 a {
   color: purple;
+}
+
+ul {
+  margin: 1em 2em;
+  list-style: square;
+}
+
+li {
+  margin-bottom: 1em;
+}
+
+hr {
+  margin: 1em auto;
 }
 
 code {
@@ -22,17 +45,16 @@ code {
   padding: 1px 2px;
 }
 
-ul {
-  list-style-type: square;
-  margin: inherit;
-}
 
-/********************************/
+/*
+ * UI stuff
+ **************************/
 
 main {
-    margin: 20px 50px;
-    background: #ccc;
-    padding: 20px;
+  background: #ccc;
+  max-width: 850px;
+  margin: 10px auto;
+  padding: 10px 20px;
 }
 
 fieldset {
@@ -41,14 +63,14 @@ fieldset {
 
 table {
   background: white;
-  margin: auto;
+  width: 100%;
 }
 
 #user-vars {
   background: white;
   text-align: left;
-  padding: 5px;
-  margin: 5px;
+  padding: 0 5px;
+  margin-bottom: 10px;
   line-height: 2;
   font-size: 17px;
 }
@@ -65,14 +87,35 @@ table {
   border-bottom: 2px solid;
 }
 
-textarea {
+#user-algorithms {
+  background: white;
+  padding: 5px;
+}
+
+legend {
+  font-size: 30px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  line-height: 1;
+}
+
+#user-algorithms label {
+  width: 30%;
+  background-color: white;
+  display: inline-block;
+  font-weight: bold;
+}
+
+#user-algorithms textarea {
   color: blue;
   height: 150px;
-  width: 200px;
+  width: 100%;
   padding: 3px;
-  /* outline: none; */
+  overflow-y: visible;
 }
-textarea[title] {
+/* Has error */
+#user-algorithms textarea[title] {
   background-color: red;
   color: black;
 }
@@ -86,9 +129,13 @@ textarea[title] {
   padding: 5px;
   background: purple;
   color: white;
-  cursor: pointer;
   font-size: 1em;
   font-weight: bold;
+  transition: color 0.5s;
+}
+#buttons button:hover, #buttons button:focus {
+  background: #a200a2;
+  cursor: pointer;
 }
 #buttons button[disabled], fieldset[disabled] #buttons button {
   font-weight: normal;
@@ -96,17 +143,37 @@ textarea[title] {
   background: dimgray;
 }
 
-/********************************/
+aside {
+  text-align: left;
+}
+
+section, footer {
+  background: gainsboro;
+  text-align: left;
+  max-width: 1000px;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+footer {
+  text-align: center;
+}
+
+/*
+ * Drawing/animation stuff
+ **************************/
 
 #sim {
   /* itch.io uses 640x360 by default */
   width: 640px;
   height: 360px;
+
   display: block;
   position: relative;
   background: black;
   border: 2px solid black;
-  margin: 5px auto;
+  margin: 10px auto;
+  overflow: hidden;
 }
 
 #sim > * {
@@ -114,27 +181,24 @@ textarea[title] {
 }
 
 #light-1, #light-2 {
-  background-color: red;
-  background-image: url(images/traffic-lights-red.svg);
+  display: inline-block;
   width: 50px;
   height: 50px;
-  display: inline-block;
   border-radius: 50%;
+  background-color: red;
+  background-image: url(images/traffic-lights.svg);
   border: 3px solid transparent;
 }
 #sim[data-ctrl-queued="true"] #light-1, #sim[data-ctrl-queued="true"] #light-2 {
   border-color: yellow;
 }
-
 #sim[data-light="0"] #light-1, #sim[data-light="0"] #light-2 {
   background-color: gray !important;
 }
 #sim[data-light="1"] #light-1 {
-  background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
 #sim[data-light="2"] #light-2 {
-  background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
 
@@ -146,85 +210,120 @@ textarea[title] {
   top: 180px;
 }
 
-#lane-1, #lane-2 {
+#intersection, #lane-1, #lane-2 {
   background: white;
-  display: flex;
-  z-index: 1;
 }
 
 #lane-1 {
-  flex-direction: column-reverse;
   left: 180px;
   width: 50px;
-  height: 210px;
-  padding-bottom: 150px;
+  height: 100%;
 }
+
 #lane-2 {
   bottom: 70px;
   height: 50px;
-  width: 380px;
-  padding-left: 260px;
+  width: 100%;
 }
 
 #intersection {
-  background: white;
-  width: 100px;
-  height: 100px;
   border-radius: 50%;
+  width: 110px;
+  height: 110px;
+  top: 205px;
+  left: 150px;
+
+  /* Only used to place elements at the center of the intersection */
   display: grid;
   place-items: center center;
-  top: 215px;
-  left: 155px;
-  z-index: 2;
 }
-#intersection[data-state="collision"] {
+#sim[data-state="error"] #intersection {
   background: radial-gradient(red, transparent);
 }
 
 .vehicle {
+  /* Will be reset by JavaScript */
+  --color: black;
+  --pos: 10;
+  
+  display: inline-block;
   width: 45px;
   height: 45px;
-  display: inline-block;
-  background-color: black;
-  background-repeat: no-repeat;
-  background-position: center;
   margin: 2px;
-  opacity: 1;
-  transition: opacity 2s, transform 1s;
-}
-.car { background-image: url(images/city-car.svg); }
-.truck { background-image: url(images/truck.svg); }
+  position: absolute;
+  background-color: var(--color);
+  background-position: center;
+  background-repeat: no-repeat;
 
-.vehicle[data-direction="south"] { transform: rotateZ(90deg); }
-.vehicle[data-direction="west"] { transform: rotateY(180deg); }
-
-#intersection[data-state="normal"] .vehicle[data-state="leaving"] {
-  opacity: 0;
-}
-#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="south"] {
+  will-change: transform;
+  transition: transform 0.3s;
   transform:
-    translateY(75px)
-    rotateZ(90deg);
-}
-#intersection[data-state="normal"] .vehicle[data-state="leaving"][data-direction="west"] {
-  transform:
-    translateX(-75px)
-    rotateY(180deg);
-}
+    translate(
+      calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
+      calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
+     )
 
-/********************************/
-
-section, footer {
-  background: gainsboro;
-  text-align: left;
-  margin: 10px;
-  padding: 10px;
+    rotateY(var(--rotate-y))
+    rotateZ(var(--rotate-z));
 }
+.vehicle.car { background-image: url(images/city-car.svg); }
+.vehicle.truck { background-image: url(images/truck.svg); }
 
-section pre {
-  white-space: pre-line;
+#sim[data-state="error"] .vehicle[data-state="leaving"] {
+  --pos: -1.5 !important; /* final position = 0 = -1.5 + 1.5 */
+  position: static;
+  animation: none;
 }
 
-footer {
-  text-align: center;
+.vehicle.west {
+  --rotate-y: 180deg;
+  --rotate-z: 0deg;
+
+  --delta-x: 50;
+  --delta-y: 0;
+}
+
+.vehicle.south {
+  --rotate-y: 0deg;
+  --rotate-z: 90deg;
+
+  --delta-x: 0;
+  --delta-y: -50;
+}
+
+.vehicle[data-state="leaving"] {
+  animation: 1.5s vehicle-leave ease-in forwards;
+}
+
+@keyframes vehicle-leave {
+  0% {
+    opacity: 1;
+
+    transform:
+      translate(
+        calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
+        calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
+      )
+
+      rotateY(var(--rotate-y))
+      rotateZ(var(--rotate-z));
+  }
+
+  75% {
+    opacity: 1;
+  }
+  
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(
+        calc(var(--delta-x) * -2.5px),
+        calc(var(--delta-y) * -1.5px)
+      )
+
+      rotateY(var(--rotate-y))
+      rotateZ(var(--rotate-z));
+  }
+
 }
