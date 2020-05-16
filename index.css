@@ -1,4 +1,8 @@
-* {
+/*
+ * General stuff
+ **************************/
+
+ * {
   /* Use natural box layout model */
   box-sizing: border-box;
   margin: 0 auto;
@@ -14,8 +18,25 @@ header {
   padding: 1em;
 }
 
+h2 {
+  margin-bottom: 1rem;
+}
+
 a {
   color: purple;
+}
+
+ul {
+  margin: 1em 2em;
+  list-style: square;
+}
+
+li {
+  margin-bottom: 1em;
+}
+
+hr {
+  margin: 1em auto;
 }
 
 code {
@@ -24,18 +45,16 @@ code {
   padding: 1px 2px;
 }
 
-ul {
-  list-style-type: square;
-  margin: inherit;
-}
 
-/********************************/
+/*
+ * UI stuff
+ **************************/
 
 main {
-  margin: 10px auto;
   background: #ccc;
-  padding: 25px;
-  max-width: 900px;
+  max-width: 850px;
+  margin: 10px auto;
+  padding: 10px 20px;
 }
 
 fieldset {
@@ -50,8 +69,8 @@ table {
 #user-vars {
   background: white;
   text-align: left;
-  padding: 5px;
-  margin-bottom: 5px;
+  padding: 0 5px;
+  margin-bottom: 10px;
   line-height: 2;
   font-size: 17px;
 }
@@ -70,13 +89,15 @@ table {
 
 #user-algorithms {
   background: white;
+  padding: 5px;
 }
 
-#user-algorithms legend {
+legend {
   font-size: 30px;
   background: white;
   border-radius: 10px;
   padding: 10px;
+  line-height: 1;
 }
 
 #user-algorithms label {
@@ -91,9 +112,10 @@ table {
   height: 150px;
   width: 100%;
   padding: 3px;
-  /* outline: none; */
+  overflow-y: visible;
 }
-textarea[title] {
+/* Has error */
+#user-algorithms textarea[title] {
   background-color: red;
   color: black;
 }
@@ -107,9 +129,13 @@ textarea[title] {
   padding: 5px;
   background: purple;
   color: white;
-  cursor: pointer;
   font-size: 1em;
   font-weight: bold;
+  transition: color 0.5s;
+}
+#buttons button:hover, #buttons button:focus {
+  background: #a200a2;
+  cursor: pointer;
 }
 #buttons button[disabled], fieldset[disabled] #buttons button {
   font-weight: normal;
@@ -117,17 +143,37 @@ textarea[title] {
   background: dimgray;
 }
 
-/********************************/
+aside {
+  text-align: left;
+}
+
+section, footer {
+  background: gainsboro;
+  text-align: left;
+  max-width: 1000px;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+footer {
+  text-align: center;
+}
+
+/*
+ * Drawing/animation stuff
+ **************************/
 
 #sim {
   /* itch.io uses 640x360 by default */
   width: 640px;
   height: 360px;
+
   display: block;
   position: relative;
   background: black;
   border: 2px solid black;
-  margin: 5px auto;
+  margin: 10px auto;
+  overflow: hidden;
 }
 
 #sim > * {
@@ -135,27 +181,24 @@ textarea[title] {
 }
 
 #light-1, #light-2 {
-  background-color: red;
-  background-image: url(images/traffic-lights-red.svg);
+  display: inline-block;
   width: 50px;
   height: 50px;
-  display: inline-block;
   border-radius: 50%;
+  background-color: red;
+  background-image: url(images/traffic-lights.svg);
   border: 3px solid transparent;
 }
 #sim[data-ctrl-queued="true"] #light-1, #sim[data-ctrl-queued="true"] #light-2 {
   border-color: yellow;
 }
-
 #sim[data-light="0"] #light-1, #sim[data-light="0"] #light-2 {
   background-color: gray !important;
 }
 #sim[data-light="1"] #light-1 {
-  background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
 #sim[data-light="2"] #light-2 {
-  background-image: url(images/traffic-lights-green.svg);
   background-color: green;
 }
 
@@ -185,36 +228,49 @@ textarea[title] {
 
 #intersection {
   border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  top: 210px;
-  left: 155px;
+  width: 110px;
+  height: 110px;
+  top: 205px;
+  left: 150px;
+
+  /* Only used to place elements at the center of the intersection */
   display: grid;
   place-items: center center;
-  z-index: 1;
 }
 #sim[data-state="error"] #intersection {
   background: radial-gradient(red, transparent);
 }
 
 .vehicle {
+  /* Will be reset by JavaScript */
+  --color: black;
+  --pos: 10;
+  
+  display: inline-block;
   width: 45px;
   height: 45px;
   margin: 2px;
-  display: inline-block;
-  background-color: black;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 1;
-  transition: transform 0.3s; /* TODO: Tweak it by observing "My attempt" */
   position: absolute;
-  z-index: 2;
+  background-color: var(--color);
+  background-position: center;
+  background-repeat: no-repeat;
+
+  will-change: transform;
+  transition: transform 0.3s;
+  transform:
+    translate(
+      calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
+      calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
+     )
+
+    rotateY(var(--rotate-y))
+    rotateZ(var(--rotate-z));
 }
-.car { background-image: url(images/city-car.svg); }
-.truck { background-image: url(images/truck.svg); }
+.vehicle.car { background-image: url(images/city-car.svg); }
+.vehicle.truck { background-image: url(images/truck.svg); }
 
 #sim[data-state="error"] .vehicle[data-state="leaving"] {
-  transform: none;
+  --pos: -1.5 !important; /* final position = 0 = -1.5 + 1.5 */
   position: static;
   animation: none;
 }
@@ -235,29 +291,14 @@ textarea[title] {
   --delta-y: -50;
 }
 
-.vehicle {
-  transform:
-    translate(
-      calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
-      calc((var(--pos) + 1.5) * var(--delta-y) * 1px)
-     )
-
-    rotateY(var(--rotate-y))
-    rotateZ(var(--rotate-z));
-}
-
-.vehicle[data-state="new"] {
-  opacity: 0;
-}
-
 .vehicle[data-state="leaving"] {
-  opacity: 1;
-  animation: 1.5s leaving forwards;
+  animation: 1.5s vehicle-leave ease-in forwards;
 }
 
-@keyframes leaving {
+@keyframes vehicle-leave {
   0% {
     opacity: 1;
+
     transform:
       translate(
         calc((var(--pos) + 1.5) * var(--delta-x) * 1px),
@@ -268,12 +309,13 @@ textarea[title] {
       rotateZ(var(--rotate-z));
   }
 
-  50% {
+  75% {
     opacity: 1;
   }
   
   100% {
     opacity: 0;
+
     transform:
       translate(
         calc(var(--delta-x) * -2.5px),
@@ -284,21 +326,4 @@ textarea[title] {
       rotateZ(var(--rotate-z));
   }
 
-}
-
-/********************************/
-
-section, footer {
-  background: gainsboro;
-  text-align: left;
-  margin: 10px;
-  padding: 10px;
-}
-
-section pre {
-  white-space: pre-line;
-}
-
-footer {
-  text-align: center;
 }
