@@ -3,7 +3,6 @@
  **************************/
 
  * {
-  /* Use natural box layout model */
   box-sizing: border-box;
   margin: 0 auto;
   padding: 0;
@@ -12,6 +11,7 @@
 body {
   background: #efefef;
   text-align: center;
+  font-size: 17px;
 }
 
 header {
@@ -19,7 +19,7 @@ header {
 }
 
 h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
 }
 
 a {
@@ -30,9 +30,8 @@ ul {
   margin: 1em 2em;
   list-style: square;
 }
-
 li {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 
 hr {
@@ -57,22 +56,30 @@ main {
   padding: 10px 20px;
 }
 
-fieldset {
-  border: 0px;
+main h2 {
+  background: white;
+  font-size: 1.75em;
+  border-radius: 1em;
+  padding: 0.125em;
+  margin-bottom: 0.25em;
 }
 
-table {
+main fieldset {
+  border: 0px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+main legend {
   background: white;
-  width: 100%;
+  border-radius: 10px;
+  font-size: 1.5em;
+  padding: 10px;
 }
 
 #user-vars {
   background: white;
   text-align: left;
-  padding: 0 5px;
-  margin-bottom: 10px;
-  line-height: 2;
-  font-size: 17px;
 }
 
 #user-vars input {
@@ -89,15 +96,6 @@ table {
 
 #user-algorithms {
   background: white;
-  padding: 5px;
-}
-
-legend {
-  font-size: 30px;
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  line-height: 1;
 }
 
 #user-algorithms label {
@@ -114,7 +112,7 @@ legend {
   padding: 3px;
   overflow-y: visible;
 }
-/* Has error */
+/* Meaning it has an error message */
 #user-algorithms textarea[title] {
   background-color: red;
   color: black;
@@ -184,10 +182,11 @@ footer {
   display: inline-block;
   width: 50px;
   height: 50px;
+  border: 4px solid transparent;
   border-radius: 50%;
   background-color: red;
   background-image: url(images/traffic-lights.svg);
-  border: 3px solid transparent;
+  background-repeat: no-repeat;
 }
 #sim[data-ctrl-queued="true"] #light-1, #sim[data-ctrl-queued="true"] #light-2 {
   border-color: yellow;

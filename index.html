@@ -14,6 +14,8 @@
   </header>
   
   <main>
+    <h2>Playground</h2>
+
     <form id="inputs" autocomplete="off" spellcheck="false">
       <fieldset id="global-fieldset">
 
@@ -33,7 +35,7 @@
               value="1, 0, 1, 1"
             />}
 
-          <br />
+          <br><br>
 
           <b>Integers</b>
             {<input id=int-names type="text"
@@ -47,7 +49,9 @@
               pattern="[12](\s*,\s*\d)*"
               value="1"
             />}
-          <br>
+
+          <br><br>
+
           <strong>* <code>light</code> must be in <code>{1, 2}</code></strong>
         </fieldset>
 
@@ -85,7 +89,7 @@ v(sLight2)
 v(sEmpty2)</textarea>
 </label>
 
-</fieldset>
+        </fieldset><!-- user-algorithms -->
 
         <div id="buttons">
           <button id="btn-start" type="submit">Start!</button>
@@ -107,9 +111,11 @@ v(sEmpty2)</textarea>
     </output>
 
     <aside>
-        <h2>Legend</h2>
+        <h3>Legend</h3>
+        <!-- TODO: Maybe use <dl>? -->
         <ul>
-            <li>Traffic lights display a yellow circle when 'Controller' is blocked on a semaphore</li>
+          <li><b>Yellow circle</b>: Traffic lights display a yellow circle when 'Controller' is blocked (waiting) on a semaphore.</li>
+          <li><b>Tooltip</b>: Hover over vehicles to see more information about them (mainly for debugging).</li>
         </ul>
     </aside>
 
@@ -117,14 +123,14 @@ v(sEmpty2)</textarea>
 
   <section>
     <h2>Exercice</h2>
-    <p>
-      <i lang="fr"></i>En français: <a hreflang="fr" href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>)</i>
+    <p lang="fr">
+      En français: <a hreflang="fr" href="https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">Exercice 2. Synchronisation : la circulation</a> (<a href="https://web.archive.org/web/20191228014022/https://lipn.univ-paris13.fr/~fouquere/ENSEIGNEMENT/L2SR/TDTP_Systemes/td6.pdf">#archivé</a>).
     </p>
 
     <hr>
 
     <p>
-        At an intersection, traffic is controlled by traffic lights (also known as "semaphores).
+        At an intersection, traffic is controlled by traffic lights (also known as "semaphores").
         <br><br>
         
         <b>Rules:</b>

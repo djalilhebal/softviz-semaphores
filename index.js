@@ -2,6 +2,10 @@
 /**
  * Utility function
  * 
+ * @example
+ * zipObject(['a', 'b'], [1, 2])
+ * // returns {a: 1, b: 2}
+ * 
  * @param {Array} arrA
  * @param {Array} arrB
  * @returns {Object}
@@ -251,8 +255,8 @@ class Sim {
     t.$elem.style.setProperty('--pos', i);
     t.$elem.title =
       `${t.name}\n\n` +
-      `orderVec: {${t.orderVec.join(', ')}}\n` +
-      `waitVec: {${t.getWaitVec().join(', ')}}`;
+      `orderVec : {${t.orderVec.join(', ')}}\n` +
+      `valuesVec: {${t.getValuesVec().join(', ')}}`;
   }
 
   static showError(algoSource, message) {
@@ -427,14 +431,15 @@ class Traverser extends Algorithm {
     const happened = Sim.crossing > 1; // more than one vehicle crossing the intersection
     if (happened) {
       Sim.ui.$sim.dataset.state = 'error';
-      throw new Error('Collision!');
+      throw new Error('Collision detected!');
     }
   }
   
   /**
+   * Return the current values of orderVec
    * @returns {Array<number>}
    */
-  getWaitVec() {
+  getValuesVec() {
     const vec = this.orderVec.map(semaName => Sim.userVars[semaName].getPosition(this));
     return vec;
   }
@@ -455,11 +460,11 @@ class Traverser extends Algorithm {
    * @returns {number}
    */
   static compareTraversers(a, b) {
-    return Traverser.compareVecs( a.getWaitVec(), b.getWaitVec() );
+    return Traverser.compareVecs( a.getValuesVec(), b.getValuesVec() );
   }
 
   /**
-   * Sort wait vecs in an ascending order
+   * To sort "values vectors" in an ascending order
    * 
    * @param {Array<number>} vecA
    * @param {Array<number>} vecB

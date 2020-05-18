@@ -4,6 +4,10 @@ TODO
 - Assert `userNames.length === userVals.length` or invalidate the form
 
 - Optimize: Don't recreate elements, functions, or arrays
+```css
+/* To make "ghost" vehicles "teleport", important for animation */
+.vehicle.ghost { transition: none; }
+```
 
 - HTML: Add legend in an aside element in main
 - HTML: Add labels to 'Global Variables' #a11y
@@ -19,10 +23,3 @@ TODO
 - JS: Maybe Split the code and use `import`s then closure-compile it
 
 - JS: Learn how to obtain the error line number from anonymous functions created via `AsyncFunction`
-
----
-
-```js
-// --pos, --dir
-$el.style.setProperty('--pos', 0);
-```
