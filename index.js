@@ -1,7 +1,7 @@
 //@ts-check
 /**
  * Utility function
- * 
+ *
  * @example
  * zipObject(['a', 'b'], [1, 2])
  * // returns {a: 1, b: 2}
@@ -160,6 +160,22 @@ class Sim {
       Sim.loadPreset(Sim.presets.correctAnswer);
     }
 
+    // Basic form validation
+
+    // TODO: Output to $inputError = <span class="error" aria-live="polite"></span>
+    function validateInputPairs($names, $vals) {
+      const namesCount = ($names.value.match(/,/g) || []).length;
+      const valsCount = ($vals.value.match(/,/g) || []).length;
+      if (valsCount !== namesCount) {
+        $vals.setCustomValidity('There should be an equal number of identifiers and values.');
+      } else {
+        $vals.setCustomValidity('');
+      }
+    }
+
+    Sim.ui.$semaVals.oninput = () => validateInputPairs(Sim.ui.$semaNames, Sim.ui.$semaVals);
+    Sim.ui.$intVals.oninput =  () => validateInputPairs(Sim.ui.$intNames, Sim.ui.$intVals);
+
   }
   
   static loadUserInputs() {
@@ -173,19 +189,17 @@ class Sim {
         traverser2: ui.$traverser2.value,
       }
     )
-
+    
     // userVars...
     const SEP = /,\s*/; // separator
 
-    const userSemas = zipObject(
-      ui.$semaNames.value.split(SEP),
-      ui.$semaVals.value.split(SEP).map(val => new Semaphore(Number(val)))
-    );
+    const semaNames = ui.$semaNames.value.split(SEP);
+    const semaVals  = ui.$semaVals.value.split(SEP);
+    const userSemas = zipObject(semaNames, semaVals.map(val => new Semaphore(Number(val))));
 
-    const userInts = zipObject(
-      ui.$intNames.value.split(SEP),
-      ui.$intVals.value.split(SEP).map(val => Number(val))
-    );
+    const intNames = ui.$intNames.value.split(SEP);
+    const intVals  = ui.$intVals.value.split(SEP);
+    const userInts = zipObject( intNames, intVals.map(val => Number(val)) );
 
     Object.assign(Sim.userVars, userSemas, userInts);
   }
